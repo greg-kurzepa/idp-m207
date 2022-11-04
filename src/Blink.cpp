@@ -8,13 +8,7 @@
 
 #include <SPI.h>
 #include <WiFiNINA.h>
-// #include <wifi_secrets.h>
-
-// Wifi
-// char wifi_ssid[] = WifiSecrets::SSID;
-// char wifi_pass[] = WifiSecrets::PASS;
-char wifi_ssid[] = "squirrel";
-char wifi_pass[] = "75/44xG1";
+#include <wifi_secrets.cpp>
 
 int wifi_status = WL_IDLE_STATUS;
 WiFiServer wifi_server(23); // arg1 = server port
@@ -30,8 +24,8 @@ void setup_ap() {
 
   while (wifi_status != WL_CONNECTED) {
     Serial.print("Wifi: Connecting to SSID: ");
-    Serial.println(wifi_ssid);
-    wifi_status = WiFi.begin(wifi_ssid, wifi_pass);
+    Serial.println(WifiSecrets::ssid);
+    wifi_status = WiFi.begin(WifiSecrets::ssid, WifiSecrets::pass);
     delay(3000); // wait for connection
   }
   wifi_server.begin();
