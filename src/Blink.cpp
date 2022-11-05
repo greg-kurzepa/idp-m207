@@ -14,8 +14,8 @@ int wifi_status = WL_IDLE_STATUS;
 WiFiServer wifi_server(23); // arg1 = server port
 bool is_client_connected = false;
 
-void setup_ap() {
-  Serial.println("Starting web server for access point");
+void setup_wifi() {
+  Serial.println("Wifi: Starting server");
 
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("ERR: Could not communicate with Wi-Fi module");
@@ -45,7 +45,7 @@ void setup()
 
   pinMode(LED_BUILTIN, OUTPUT);
 
-  setup_ap();
+  setup_wifi();
 }
 
 void tick_wifi() {
