@@ -54,12 +54,14 @@ void tick_wifi() {
   if (client) {
     // Clear input buffer if new connection
     if (!is_client_connected) {
-      client.flush();
-      wifi_server.println("Welcome to the Fourth Wheel");
       is_client_connected = true;
-    }
-
-    if (client.available()) {
+      client.flush();
+      // discard whatever bytes come in at the start of connection
+      while (client.available()) {
+        client.read();
+      }
+      wifi_server.println("Welcome to the Fourth Wheel");
+    } else if (client.available()) {
       // Then: there bytes available to read from the client,
       char ch = client.read();
       if (ch == 'f') {
