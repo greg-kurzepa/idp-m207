@@ -17,6 +17,7 @@ void setup_wifi() {
     while (true); // STOP
   }
 
+  // Connect to mobile hotspot
   while (wifi_status != WL_CONNECTED) {
     Serial.print("Wifi: Connecting to SSID: ");
     Serial.println(WifiSecrets::ssid);
@@ -41,7 +42,7 @@ void decode_cmd() {
   Serial.println("Decoding cmd");
   // Motor speed command
   if (current_cmd[0] == 'm') {
-    // Determine motor number
+    // Parse motor number
     String nstr = current_cmd.substring(1,2);
     int n = nstr.toInt();
 
@@ -57,7 +58,7 @@ void decode_cmd() {
 }
 
 void tick_wifi() {
-  // wait for a new client to connect
+  // wait & obtain the connected client
   WiFiClient client = wifi_server.available();
   if (client) {
 
@@ -76,6 +77,7 @@ void tick_wifi() {
     while (client.available()) {
       char ch = client.read();
       if (ch == '\n') {
+        // Execute command on newline
         decode_cmd();
         current_cmd = "";
       }

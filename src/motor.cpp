@@ -3,7 +3,8 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
-Adafruit_MotorShield AFMS; // needed or bad things
+// AFMS needs to be stored here or bad things happen
+Adafruit_MotorShield AFMS;
 Adafruit_DCMotor *motor1;
 Adafruit_DCMotor *motor2;
 
@@ -18,6 +19,7 @@ void setup_motors() {
 }
 
 void set_motor_speed(int n, int speed) {
+    // Get the desired motor object
     Adafruit_DCMotor *motor;
     int prev_speed = -1;
     switch (n)
@@ -37,8 +39,10 @@ void set_motor_speed(int n, int speed) {
     }
 
     if (motor == nullptr) {
-        Serial.println("NULLLLLLL!!!!!!");
-    } else if (prev_speed != speed) {
+        Serial.println("Error: null pointer motor");
+    }
+    // Only set new speed if changed to avoid overloading the circuits
+    else if (prev_speed != speed) {
         motor->setSpeed(speed);
         motor->run(BACKWARD);
 
