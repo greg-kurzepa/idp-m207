@@ -11,9 +11,9 @@ int motor2_speed = 0;
 
 void setup_motors() {
     Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-    AFMS.begin();
     motor1 = AFMS.getMotor(1);
     motor2 = AFMS.getMotor(2);
+    AFMS.begin();
 }
 
 void set_motor_speed(int n, int speed) {
@@ -34,8 +34,22 @@ void set_motor_speed(int n, int speed) {
     default:
         break;
     }
+    // Serial.println("about to set motor speeeedd to ");
+    // Serial.println(speed);
+    // Serial.print("of Motor ");
+    // Serial.println(n);
+
+    if (motor == nullptr) {
+        Serial.println("NULLLLLLL!!!!!!");
+    }
+    delay(100);
+
     if (prev_speed != speed) {
+        Serial.println("HERE WE GO");
+        delay(100);
         motor->setSpeed(speed);
+        Serial.println("SPEED HAS BEEN SETTTTT");
+        delay(100);
         motor->run(BACKWARD);
         Serial.print("Motor ");
         Serial.print(n);
