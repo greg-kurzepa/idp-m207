@@ -4,9 +4,6 @@
  * then off for one second, repeatedly.
  */
 
-#include <Arduino.h>
-#include <SPI.h>
-
 #include <wifi.cpp>
 #include <motor.hpp>
 
@@ -21,10 +18,12 @@ void setup()
 
   setup_wifi();
   setup_motors();
+  setup_follower();
   set_motor_speed(1,0);
   set_motor_speed(2,0);
 }
 
 void loop() {
   tick_wifi();
+  get_follower_readings();
 }
