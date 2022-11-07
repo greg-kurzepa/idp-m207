@@ -34,16 +34,11 @@ void decode_motor_speed_cmd(String str) {
     int n = (int)str[0] - 48;
 
     if (n == 1 || n == 2) {
-      // Speed is two bytes - magnitude 0-127 + MSB
-      // Because seems like only the range 0-127 can be used
-      // 128+ gives the Unicode replacement character, n=-62
-      int speed = str[1];
-      Serial.println("BYTES");
-      Serial.println((int)str[1]);
-      Serial.println((int)str[2]);
-      if (str[2] == 1) {
-        speed += 128;
-      }
+      // Speed is two bytes - magnitude (40+[0,64]) + (40+[0,3])
+      // Weird things happen when using full range of char, so use limited range
+      // and use offset of 40
+      int speed = str[1] - 40;
+      speed += 64 * (str[2] - 40);
       set_motor_speed(n, speed);
     } else {
       wifi_server.println("Invalid motor number");
