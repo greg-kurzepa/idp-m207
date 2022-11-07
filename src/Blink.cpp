@@ -17,11 +17,11 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
 
   setup_motors();
-  setup_follower();
+  // setup_follower();
   setup_wifi();
 }
 
 void loop() {
   tick_wifi();
-  get_follower_readings();
+  // get_follower_readings();
 }

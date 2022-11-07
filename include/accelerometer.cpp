@@ -1,5 +1,4 @@
-#include <SparkFunLSM6DS3.h>
+#include "motor.hpp"
+//#include <SparkFunLSM6DS3.h>
 
-void setup_accelerometer() {
-    
-}
+void setup_accelerometer() {}

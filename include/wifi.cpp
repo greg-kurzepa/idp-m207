@@ -31,29 +31,65 @@ void setup_wifi() {
 
 }
 
-String current_cmd = "";
-
-void decode_cmd() {
-  if (current_cmd.length() < 3) {
-    return;
-  }
-
-  Serial.println("Decoding cmd");
-  // Motor speed command
-  if (current_cmd[0] == 'm') {
+void decode_motor_speed_cmd(String str) {
     // Parse motor number
-    String nstr = current_cmd.substring(1,2);
-    int n = nstr.toInt();
+    // 49 = ascii 1; 50 = ascii 2
+    int n = (int)str[0] - 48;
 
     if (n == 1 || n == 2) {
-      // Parse motor speed & set
-      String speedstr = current_cmd.substring(2);
-      int speed = speedstr.toInt();
+      // Speed is two bytes - magnitude 0-127 + MSB
+      // Because seems like only the range 0-127 can be used
+      // 128+ gives the Unicode replacement character, n=-62
+      int speed = str[1];
+      Serial.println("BYTES");
+      Serial.println((int)str[1]);
+      Serial.println((int)str[2]);
+      if (str[2] == 1) {
+        speed += 128;
+      }
       set_motor_speed(n, speed);
     } else {
       wifi_server.println("Invalid motor number");
     }
+}
+
+// Takes a sequence of commands,
+// executes the first command,
+// and returns remaining unprocessed commands 
+String decode_cmd(String str) {
+  int strlen = str.length();
+  if (strlen == 0) {
+    return "";
   }
+
+  char cmd_ch = str[0];
+  String rest = "";
+  switch (cmd_ch)
+  {
+  case 'm': // Set motor speed
+    int cmd_len = 4;
+    if (strlen >= cmd_len) {
+      rest = str.substring(cmd_len);
+      decode_motor_speed_cmd(str.substring(1,cmd_len));
+    }
+    break;
+  
+  default:
+    break;
+  }
+  return rest;
+}
+
+String current_cmd = "";
+
+void decode_cmds() {
+  Serial.println("Decoding cmds");
+  // Motor speed command
+  String str = current_cmd;
+  while (str.length() > 0) {
+    str = decode_cmd(str);
+  }
+  current_cmd = "";
 }
 
 void tick_wifi() {
@@ -72,17 +108,17 @@ void tick_wifi() {
       wifi_server.println("Welcome to the Fourth Wheel");
     }
 
-    // While there bytes available to read from the client, store in current_cmd
+    // ~~While there bytes available to read from the client, store in current_cmd
     while (client.available()) {
       char ch = client.read();
-      if (ch == '\n') {
-        // Execute command on newline
-        decode_cmd();
-        current_cmd = "";
-      }
-      else if (ch != '\r') {
+      // if (ch == '\n') {
+      //   // Execute command on newline
+      //   decode_cmds();
+      // }
+      // else if (ch != '\r') {
         current_cmd += ch;
-      }
+      // }
     }
+    decode_cmds();
   }
 }
