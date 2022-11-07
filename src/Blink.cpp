@@ -16,11 +16,9 @@ void setup()
 
   pinMode(LED_BUILTIN, OUTPUT);
 
-  setup_wifi();
   setup_motors();
   setup_follower();
-  set_motor_speed(1,0);
-  set_motor_speed(2,0);
+  setup_wifi();
 }
 
 void loop() {
