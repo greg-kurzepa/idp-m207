@@ -5,10 +5,10 @@ int follower_2_pin = 5;
 int follower_3_pin = 6;
 int follower_4_pin = 7;
 
-int follower_1 = 0;
-int follower_2 = 0;
-int follower_3 = 0;
-int follower_4 = 0;
+extern int follower_1 = 0;
+extern int follower_2 = 0;
+extern int follower_3 = 0;
+extern int follower_4 = 0;
 
 void setup_follower() {
     pinMode(follower_1_pin, INPUT);

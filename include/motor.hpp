@@ -17,3 +17,8 @@ namespace WifiSecrets {
     extern char ssid[];
     extern char pass[];
 }
+
+extern int follower_1;
+extern int follower_2;
+extern int follower_3;
+extern int follower_4;
