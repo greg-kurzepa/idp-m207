@@ -1,8 +1,5 @@
-
-#include <WiFiNINA.h>
-
-#include <wifi_secrets.cpp>
 #include "motor.hpp"
+#include <WiFiNINA.h>
 
 int wifi_status = WL_IDLE_STATUS;
 WiFiServer wifi_server(23); // arg1 = server port

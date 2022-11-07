@@ -1,5 +1,4 @@
-
-#include <Wire.h>
+#include "motor.hpp"
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
