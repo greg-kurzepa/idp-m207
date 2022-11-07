@@ -4,9 +4,6 @@
  * then off for one second, repeatedly.
  */
 
-#include <Arduino.h>
-#include <SPI.h>
-
 #include <wifi.cpp>
 #include <motor.hpp>
 
@@ -20,12 +17,11 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
 
   setup_motors();
-  // set_motor_speed(1,50);
-  // set_motor_speed(2,50);
-
+  setup_follower();
   setup_wifi();
 }
 
 void loop() {
   tick_wifi();
+  get_follower_readings();
 }
