@@ -38,22 +38,17 @@ void decode_cmd() {
     return;
   }
 
-  Serial.println("Decoding cmd!!");
+  Serial.println("Decoding cmd");
+  // Motor speed command
   if (current_cmd[0] == 'm') {
-    Serial.println("That's an m!!");
+    // Determine motor number
     String nstr = current_cmd.substring(1,2);
-    Serial.println("got the nstr!");
-    Serial.println(nstr);
     int n = nstr.toInt();
-    Serial.print("Motor number: ");
-    Serial.println(n);
 
     if (n == 1 || n == 2) {
+      // Parse motor speed & set
       String speedstr = current_cmd.substring(2);
       int speed = speedstr.toInt();
-      Serial.print("Motor speed requested: ");
-      Serial.println(speed);
-      delay(100);
       set_motor_speed(n, speed);
     } else {
       wifi_server.println("Invalid motor number");
