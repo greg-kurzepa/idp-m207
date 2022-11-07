@@ -1,9 +1,8 @@
 
-#include <SPI.h>
 #include <WiFiNINA.h>
 
 #include <wifi_secrets.cpp>
-#include <motor.hpp>
+#include "motor.hpp"
 
 int wifi_status = WL_IDLE_STATUS;
 WiFiServer wifi_server(23); // arg1 = server port
@@ -17,6 +16,7 @@ void setup_wifi() {
     while (true); // STOP
   }
 
+  // Connect to mobile hotspot
   while (wifi_status != WL_CONNECTED) {
     Serial.print("Wifi: Connecting to SSID: ");
     Serial.println(WifiSecrets::ssid);
@@ -31,8 +31,33 @@ void setup_wifi() {
 
 }
 
+String current_cmd = "";
+
+void decode_cmd() {
+  if (current_cmd.length() < 3) {
+    return;
+  }
+
+  Serial.println("Decoding cmd");
+  // Motor speed command
+  if (current_cmd[0] == 'm') {
+    // Parse motor number
+    String nstr = current_cmd.substring(1,2);
+    int n = nstr.toInt();
+
+    if (n == 1 || n == 2) {
+      // Parse motor speed & set
+      String speedstr = current_cmd.substring(2);
+      int speed = speedstr.toInt();
+      set_motor_speed(n, speed);
+    } else {
+      wifi_server.println("Invalid motor number");
+    }
+  }
+}
+
 void tick_wifi() {
-  // wait for a new client to connect
+  // wait & obtain the connected client
   WiFiClient client = wifi_server.available();
   if (client) {
 
@@ -46,32 +71,18 @@ void tick_wifi() {
       }
       wifi_server.println("Welcome to the Fourth Wheel");
     }
-    else if (client.available()) {
-      // Then: there bytes available to read from the client,
+
+    // While there bytes available to read from the client, store in current_cmd
+    while (client.available()) {
       char ch = client.read();
-      if (ch == 'm') {
-        String nstr = "";
-        nstr += (char)client.read();
-        int n = nstr.toInt();
-        Serial.print("Motor number: ");
-        Serial.println(n);
-        if (n == 1 || n == 2) {
-          String speedstr = "";
-          while (client.available()) {
-            char ch = client.read();
-            if (ch != '\r' && ch != '\n') {
-              speedstr += ch;
-            }
-          }
-          int speed = speedstr.toInt();
-          Serial.print("Motor speed requested: ");
-          Serial.println(speed);
-          set_motor_speed(n, speed);
-        } else {
-          wifi_server.println("Invalid motor number");
-        }
+      if (ch == '\n') {
+        // Execute command on newline
+        decode_cmd();
+        current_cmd = "";
       }
-      wifi_server.println("Motor speed set");
+      else if (ch != '\r') {
+        current_cmd += ch;
+      }
     }
   }
 }
