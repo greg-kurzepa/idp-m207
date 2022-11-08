@@ -47,30 +47,48 @@ void tick_wifi() {
             is_client_connected = true;
             client.flush();
             // discard whatever bytes come in at the start of connection
-            while (client.available()) {
-                client.read();
-            }
+            // while (client.available()) {
+            //     client.read();
+            // }
             //wifi_server.println("Welcome to the Fourth Wheel");
         }
 
         if (client.available() > 0) {
             client.read(&recv_buffer[0], RECV_BUFSIZE); // reads all bytes from client
 
+            Serial.println(recv_buffer[0]);
+
             // decodes message and performs instructions
 
             // byte 0 (instruction byte)
             instruction = recv_buffer[0];
-            if (instruction & 0b10000000) { // if 0th bit of instruction byte = 1 (i.e. = true):
+            // if bit 7 of instruction byte = 1 (i.e. = true):
+            if (instruction & 1<<7) {
                 set_motor_speed(1, recv_buffer[1]);
             }
-            if (instruction & 0b01000000) { // if 1st bit of instruction byte = 1 (i.e. = true):
-                set_motor_speed(2, recv_buffer[1]);
+            // if bit 6 of instruction byte = 1 (i.e. = true):
+            if (instruction & 1<<6) {
+                set_motor_speed(2, recv_buffer[2]);
             }
-            if (instruction & 0b00100000) { // 2nd bit
+            // bit 5 → request line follower data
+            if (instruction & 1<<5) {
+                Serial.println("Requested line follower data");
                 get_follower_data = true;
             }
-            if (instruction & 0b00010000) { // 2nd bit
+            // bit 4 → request line follower data
+            if (instruction & 1<<4) {
+                Serial.println("Requested IMU data");
                 get_imu_data = true;
+            }
+            // bit 2 → motor 1 reverse
+            if (instruction & 1<<2) {
+                Serial.println("Requesting motor 1 reverse");
+                // TODO
+            }
+            // bit 1 → motor 2 reverse
+            if (instruction & 1<<1) {
+                Serial.println("Requesting motor 2 reverse");
+                // TODO
             }
 
             // bytes 1 and 2 are for motor speeds
