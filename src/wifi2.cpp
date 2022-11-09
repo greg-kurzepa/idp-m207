@@ -8,20 +8,13 @@ int wifi_status = WL_IDLE_STATUS;
 WiFiServer wifi_server(23); // arg1 = server port
 bool is_client_connected = false;
 
-void setup_wifi() {
-    Serial.println("Wifi: Starting server");
-
-    if (WiFi.status() == WL_NO_MODULE) {
-    Serial.println("ERR: Could not communicate with Wi-Fi module");
-    while (true); // STOP
-    }
-
-    // Connect to mobile hotspot
+// Connect to mobile hotspot
+void wifi_connect() {
     while (wifi_status != WL_CONNECTED) {
     Serial.print("Wifi: Connecting to SSID: ");
     Serial.println(WifiSecrets::ssid);
     wifi_status = WiFi.begin(WifiSecrets::ssid, WifiSecrets::pass);
-    delay(3000); // wait for connection
+    delay(2000); // wait for connection
     }
     wifi_server.begin();
 
@@ -30,7 +23,20 @@ void setup_wifi() {
     Serial.println(ip);
 }
 
+void setup_wifi() {
+    Serial.println("Wifi: Starting server");
+
+    if (WiFi.status() == WL_NO_MODULE) {
+        Serial.println("ERR: Could not communicate with Wi-Fi module");
+        while (true); // STOP
+    }
+
+    wifi_connect();
+}
+
 void tick_wifi() {
+    wifi_status = WiFi.status();
+
     WiFiClient client = wifi_server.available();
     uint8_t recv_buffer[RECV_BUFSIZE];
     uint8_t send_buffer[SEND_BUFSIZE];
