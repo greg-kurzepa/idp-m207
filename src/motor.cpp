@@ -1,5 +1,4 @@
 #include "motor.hpp"
-#include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
 // AFMS needs to be stored here or bad things happen
@@ -7,6 +6,7 @@ Adafruit_MotorShield AFMS;
 Adafruit_DCMotor *motor1;
 Adafruit_DCMotor *motor2;
 
+// desired values
 int motor1_speed = 0;
 int motor2_speed = 0;
 
@@ -42,12 +42,30 @@ void set_motor_speed(int n, int speed) {
     }
     // Only set new speed if changed to avoid overloading the circuits
     else if (prev_speed != speed) {
-        motor->setSpeed(speed);
-        motor->run(BACKWARD);
+        uint8_t direction = FORWARD;
+        int abs_speed = speed;
+        if (speed < 0) {
+            direction = BACKWARD;
+            abs_speed = -speed;
+        }
+        motor->setSpeed(abs_speed);
+        motor->run(direction);
 
         Serial.print("Motor ");
         Serial.print(n);
         Serial.print(" set to speed: ");
         Serial.println(speed);
     }
+}
+
+void pause_motors () {
+    motor1->setSpeed(0);
+    motor1->run(FORWARD);
+    motor2->setSpeed(0);
+    motor2->run(FORWARD);
+}
+
+void resume_motors() {
+    set_motor_speed(1, motor1_speed);
+    set_motor_speed(2, motor2_speed);
 }
