@@ -1,5 +1,5 @@
 #define RECV_BUFSIZE 6 // length of each message received from pc client
-#define SEND_BUFSIZE 1 // length of each message sent to pc client
+#define SEND_BUFSIZE 5 // length of each message sent to pc client
 
 #include "motor.hpp"
 #include <WiFiNINA.h>
@@ -85,10 +85,9 @@ void tick_wifi() {
         uint8_t send_buffer[SEND_BUFSIZE];
         uint8_t instruction {0};
         uint8_t led_set {0};
-        uint8_t follower_data {0};
 
         bool get_follower_data = false;
-        bool get_imu_data = false;
+        bool get_ultrasonic_data = false;
 
         // read all bytes from client (assume fixed length message)
         client.read(&recv_buffer[0], RECV_BUFSIZE);
@@ -118,13 +117,11 @@ void tick_wifi() {
         }
         // bit 5 → request line follower data?
         if (instruction & 1<<5) {
-            Serial.println("Requested line follower data");
             get_follower_data = true;
         }
-        // bit 4 → request line follower data?
+        // bit 4 → request ultrasonic data?
         if (instruction & 1<<4) {
-            Serial.println("Requested IMU data");
-            get_imu_data = true;
+            get_ultrasonic_data = true;
         }
 
         // byte 3 (set LEDs)
@@ -136,13 +133,23 @@ void tick_wifi() {
 
         // Send response of sensor readings
         // (CANNOT CURRENTLY SEND ANY IMU READINGS since we have not implemented imu stuff yet)
+        uint8_t follower_data {0};
         follower_data |= follower_1 << 7;
         follower_data |= follower_2 << 6;
         follower_data |= follower_3 << 5;
         follower_data |= follower_4 << 4;
         send_buffer[0] = follower_data;
 
-        wifi_server.write(&send_buffer[0], SEND_BUFSIZE);
+        if (get_ultrasonic_data) {
+            pulse_ultrasonic(1);
+            pulse_ultrasonic(2);
+        }
+        send_buffer[1] = latest_ultrasonic1_dist >> 8;
+        send_buffer[2] = latest_ultrasonic1_dist;
+        send_buffer[3] = latest_ultrasonic2_dist >> 8;
+        send_buffer[4] = latest_ultrasonic2_dist;
+
+        wifi_server.write(send_buffer, SEND_BUFSIZE);
 
     } else { // no client with data
         if (rc_timeout < (current_millis - last_insn_time) && !is_paused) {

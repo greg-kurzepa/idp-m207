@@ -17,6 +17,17 @@ void setup_motors() {
     AFMS.begin();
 }
 
+void force_motor_speed(Adafruit_DCMotor *motor, int speed) {
+    uint8_t direction = FORWARD;
+    int abs_speed = speed;
+    if (speed < 0) {
+        direction = BACKWARD;
+        abs_speed = -speed;
+    }
+    motor->setSpeed(abs_speed);
+    motor->run(direction);
+}
+
 void set_motor_speed(int n, int speed) {
     // Get the desired motor object
     Adafruit_DCMotor *motor;
@@ -42,15 +53,7 @@ void set_motor_speed(int n, int speed) {
     }
     // Only set new speed if changed to avoid overloading the circuits
     else if (prev_speed != speed) {
-        uint8_t direction = FORWARD;
-        int abs_speed = speed;
-        if (speed < 0) {
-            direction = BACKWARD;
-            abs_speed = -speed;
-        }
-        motor->setSpeed(abs_speed);
-        motor->run(direction);
-
+        force_motor_speed(motor, speed);
         Serial.print("Motor ");
         Serial.print(n);
         Serial.print(" set to speed: ");
@@ -66,6 +69,6 @@ void pause_motors () {
 }
 
 void resume_motors() {
-    set_motor_speed(1, motor1_speed);
-    set_motor_speed(2, motor2_speed);
+    force_motor_speed(motor1, motor1_speed);
+    force_motor_speed(motor2, motor2_speed);
 }

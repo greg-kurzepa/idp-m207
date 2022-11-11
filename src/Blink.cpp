@@ -18,19 +18,11 @@ void setup()
   setup_motors();
   setup_follower();
   setup_wifi();
+
+  setup_ultrasonic();
 }
 
 void loop() {
   tick_wifi();
   get_follower_readings();
-  //get_imu_readings();
-
-  // Serial.print(follower_1);
-  // Serial.print(" ");
-  // Serial.print(follower_2);
-  // Serial.print(" ");
-  // Serial.print(follower_3);
-  // Serial.print(" ");
-  // Serial.print(follower_4);
-  // Serial.println();
 }
