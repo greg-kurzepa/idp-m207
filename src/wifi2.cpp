@@ -7,7 +7,7 @@
 // remote control timeout (ms)
 // After no messages after this duration, assume disconnection
 // and pause effects of remote commands
-int rc_timeout = 200;
+int rc_timeout = 330;
 int last_insn_time = -1;
 bool is_paused = false;
 

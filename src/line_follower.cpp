@@ -1,9 +1,10 @@
 #include "motor.hpp"
 
-int follower_1_pin = 4; // left
-int follower_2_pin = 5; // middle
-int follower_3_pin = 7; // right
-int follower_4_pin = 6;
+int follower_1_pin = 4; // purple
+int follower_2_pin = 5; // yellow
+int follower_3_pin = 6; // orange
+int follower_4_pin = 7; // brown
+// on board, from right to left: purple, orange, yellow, brown
 
 extern int follower_1 = 0;
 extern int follower_2 = 0;
