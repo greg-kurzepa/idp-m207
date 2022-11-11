@@ -18,5 +18,4 @@ void setup()
 
 void loop() {
   tick_wifi();
-  get_follower_readings();
 }

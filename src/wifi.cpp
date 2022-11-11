@@ -130,15 +130,20 @@ void tick_wifi() {
 
         // Note: bytes 4,5,6 are currently unassigned to a purpose in life (so sad)
 
-
+        //
         // Send response of sensor readings
+        //
         // (CANNOT CURRENTLY SEND ANY IMU READINGS since we have not implemented imu stuff yet)
-        uint8_t follower_data {0};
-        follower_data |= follower_1 << 7;
-        follower_data |= follower_2 << 6;
-        follower_data |= follower_3 << 5;
-        follower_data |= follower_4 << 4;
-        send_buffer[0] = follower_data;
+        
+        if (get_follower_data) {
+            get_follower_readings();
+            uint8_t follower_data {0};
+            follower_data |= follower_1 << 7;
+            follower_data |= follower_2 << 6;
+            follower_data |= follower_3 << 5;
+            follower_data |= follower_4 << 4;
+            send_buffer[0] = follower_data;
+        }
 
         if (get_ultrasonic_data) {
             pulse_ultrasonic(1);
