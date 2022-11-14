@@ -28,6 +28,8 @@ extern int follower_1;
 extern int follower_2;
 extern int follower_3;
 extern int follower_4;
+extern int line_changes[];
+extern int prev_line_changes[];
 
 // Ultrasonic
 void setup_ultrasonic();

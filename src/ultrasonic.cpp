@@ -11,6 +11,8 @@ void setup_ultrasonic() {
     pinMode(ultrasonic_2_pin, INPUT);
 }
 
+const int echo_timeout = 15000; // μs
+
 void pulse_ultrasonic(int n) {
     // Trigger the pulses
     digitalWrite(ultrasonic_trigger_pin, LOW);
@@ -29,8 +31,7 @@ void pulse_ultrasonic(int n) {
         echo_pin = ultrasonic_2_pin;
         break;
     }
-    // (timeout in μs)
-    long trip_micros = pulseIn(echo_pin, HIGH, 15000);
+    long trip_micros = pulseIn(echo_pin, HIGH, echo_timeout);
     int dist_mm = ((speed_of_sound * trip_micros)/ 1000) / 2;
     
     switch (n)
