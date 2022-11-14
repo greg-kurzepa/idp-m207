@@ -1,5 +1,13 @@
 #include "motor.hpp"
 
+extern int prev_millis {0};
+extern int curr_millis {0};
+
+void update_time() {
+  prev_millis = curr_millis;
+  curr_millis = millis();
+}
+
 void setup()
 {
   Serial.begin(9600);
@@ -17,5 +25,7 @@ void setup()
 }
 
 void loop() {
+  update_time();
+  pulse_motion_led();
   tick_wifi();
 }

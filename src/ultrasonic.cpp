@@ -11,7 +11,7 @@ void setup_ultrasonic() {
     pinMode(ultrasonic_2_pin, INPUT);
 }
 
-const int echo_timeout = 15000; // μs
+const int echo_timeout = 8000; // μs
 
 void pulse_ultrasonic(int n) {
     // Trigger the pulses

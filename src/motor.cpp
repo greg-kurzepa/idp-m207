@@ -10,6 +10,10 @@ Adafruit_DCMotor *motor2;
 int motor1_speed = 0;
 int motor2_speed = 0;
 
+bool is_moving() {
+    return (motor1_speed && motor2_speed);
+}
+
 void setup_motors() {
     AFMS = Adafruit_MotorShield();
     motor1 = AFMS.getMotor(1);

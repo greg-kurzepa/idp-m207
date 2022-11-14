@@ -27,7 +27,7 @@ void wifi_connect() {
         wifi_status = WiFi.begin(WifiSecrets::ssid, WifiSecrets::pass);
         // wait for connection attempt
         while ((wifi_status = WiFi.status()) == WL_IDLE_STATUS) {
-            delay(100);
+            delay(10);
         }
         // either WL_CONNECTED or WL_CONNECT_FAILED
     }

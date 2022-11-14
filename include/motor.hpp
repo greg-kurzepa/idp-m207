@@ -13,12 +13,15 @@ const int follower_1_pin = 4; // purple
 const int follower_2_pin = 5; // yellow
 const int follower_3_pin = 6; // orange
 const int follower_4_pin = 7; // brown
+// led pins
+const int motion_led_pin = 0;
 
 // Motors
 void setup_motors();
 void set_motor_speed(int n, int speed);
 void pause_motors();
 void resume_motors();
+bool is_moving();
 
 // Line followers
 void setup_follower();
@@ -48,3 +51,11 @@ namespace WifiSecrets {
     extern char ssid[];
     extern char pass[];
 }
+
+// LEDs
+void pulse_motion_led();
+
+// Time
+void update_time();
+extern int prev_millis;
+extern int curr_millis;
