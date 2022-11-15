@@ -15,6 +15,11 @@ const int follower_3_pin = 6; // orange
 const int follower_4_pin = 7; // brown
 // led pins
 const int motion_led_pin = 0;
+// block density detection subsystem, all have prefix p_
+const int p_is_dense_pin = 8; // green
+const int p_is_block_pin = 9; // yellow
+const int p_lo_density_led_pin = 10; // lights up green led
+const int p_hi_density_led_pin = 11; // lights up red led
 
 // Motors
 void setup_motors();
@@ -55,7 +60,9 @@ namespace WifiSecrets {
 }
 
 // LEDs
-void pulse_motion_led();
+void update_leds();
+void setup_leds();
+bool detect_cube();
 
 // Time
 void update_time();

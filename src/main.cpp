@@ -19,6 +19,7 @@ void setup()
 
   setup_motors();
   setup_follower();
+  setup_leds();
   setup_wifi();
 
   setup_ultrasonic();
@@ -26,6 +27,6 @@ void setup()
 
 void loop() {
   update_time();
-  pulse_motion_led();
+  update_leds();
   tick_wifi();
 }
