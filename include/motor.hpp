@@ -23,6 +23,8 @@ void pause_motors();
 void resume_motors();
 bool is_moving();
 
+extern bool is_paused;
+
 // Line followers
 void setup_follower();
 void get_follower_readings();

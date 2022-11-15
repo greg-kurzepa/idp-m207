@@ -9,7 +9,7 @@
 // and pause effects of remote commands
 int rc_timeout = 300;
 int last_insn_time = -1;
-bool is_paused = false;
+extern bool is_paused = false;
 
 uint8_t last_request_id = 255;
 // Used to combine cumulative data of latest response with the previous failed response
@@ -53,6 +53,7 @@ void pause_activities() {
 }
 
 void resume_activities() {
+    is_paused = false;
     Serial.println("Wifi: Resuming activity due to reconnection");
     resume_motors();
 }
@@ -192,7 +193,6 @@ void tick_wifi() {
     if (WiFiClient client = wifi_server.available()) {
         last_insn_time = current_millis;
         if (is_paused) {
-            is_paused = false;
             resume_activities();
         }
         handle_request(client);

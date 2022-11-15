@@ -11,7 +11,7 @@ int motor1_speed = 0;
 int motor2_speed = 0;
 
 bool is_moving() {
-    return (motor1_speed && motor2_speed);
+    return (motor1_speed && motor2_speed && !is_paused);
 }
 
 void setup_motors() {
