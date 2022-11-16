@@ -4,10 +4,10 @@
 #include "motor.hpp"
 #include <WiFiNINA.h>
 
-// remote control timeout (ms)
-// After no messages after this duration, assume disconnection
-// and pause effects of remote commands
-int rc_timeout = 300;
+// remote control timeout (ms):
+// After no messages after this duration,
+// pause effects of remote commands
+int rc_timeout = 100;
 int last_insn_time = -1;
 extern bool is_paused = false;
 
@@ -97,7 +97,6 @@ void handle_request(WiFiClient client) {
 
     // read all bytes from client (assume fixed length message)
     client.read(&recv_buffer[0], RECV_BUFSIZE);
-    // Serial.println(recv_buffer[0]);
 
     // decodes message and performs instructions
 
@@ -176,6 +175,14 @@ void handle_request(WiFiClient client) {
     wifi_server.write(send_buffer, SEND_BUFSIZE);
 }
 
+// call client.stop() after this many milliseconds
+int client_timeout = 1000;
+WiFiClient last_client;
+
+int reset_timeout = 5000;
+
+void(* resetArduino) (void) = 0;
+
 void tick_wifi() {
     wifi_status = WiFi.status();
 
@@ -189,16 +196,34 @@ void tick_wifi() {
     }
     int current_millis = millis();
 
-    // obtain a connected client that has available readable data
+    // obtain a connected client that has available readable data.
+    // client connection persists out of scope
     if (WiFiClient client = wifi_server.available()) {
         last_insn_time = current_millis;
+        // the below would get run somewhat regularly and cause occasional delays
+        // if (client != last_client) {
+        //     Serial.println("Wifi: Client replaced, disconnecting");
+        //     last_client.stop();
+        // }
+        last_client = client;
         if (is_paused) {
             resume_activities();
         }
         handle_request(client);
     } else { // no client with data
-        if (rc_timeout < (current_millis - last_insn_time) && !is_paused) {
+        int time_since_res = (current_millis - last_insn_time);
+        if (rc_timeout < time_since_res && !is_paused) {
             pause_activities();
+        }
+        if (client_timeout < time_since_res) {
+            if (last_client.connected()) {
+                Serial.println("Wifi: Disconnecting client");
+                last_client.stop();
+            }
+        }
+        if (reset_timeout < time_since_res) {
+            Serial.println("Wifi: Resetting");
+            resetArduino();
         }
     }
 }
