@@ -36,5 +36,6 @@ void loop() {
   update_time();
   update_leds();
   tick_wifi();
+  //detect_cube(); //shouldn't be here, should be in local_nav.
   //Serial.println(freeMemory(), DEC);
 }

@@ -7,7 +7,6 @@
 
 extern int max_looptime;
 
-const int motion_led_pin = 0;
 const int ultrasonic_trigger_pin = 1;
 const int ultrasonic_1_pin = 2;
 const int ultrasonic_2_pin = 3;
@@ -21,6 +20,7 @@ const int p_is_dense_pin = 8; // green
 const int p_is_block_pin = 9; // yellow
 const int p_lo_density_led_pin = 10; // lights up green led
 const int p_hi_density_led_pin = 11; // lights up red led
+const int motion_led_pin = 12;
 
 // Motors
 void setup_motors();
