@@ -194,6 +194,7 @@ void tick_wifi() {
         last_insn_time = current_millis;
         if (is_paused) {
             resume_activities();
+            max_looptime = 0;
         }
         handle_request(client);
     } else { // no client with data

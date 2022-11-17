@@ -5,6 +5,8 @@
 #include <SPI.h>
 #include <Wire.h>
 
+extern int max_looptime;
+
 const int ultrasonic_trigger_pin = 1;
 const int ultrasonic_1_pin = 2;
 const int ultrasonic_2_pin = 3;
