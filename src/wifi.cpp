@@ -180,6 +180,7 @@ int client_timeout = 1000;
 WiFiClient last_client;
 
 int reset_timeout = 5000;
+int keepalive_time;
 
 void(* resetArduino) (void) = 0;
 
@@ -193,23 +194,35 @@ void tick_wifi() {
             pause_activities();
         }
         wifi_connect();
+        keepalive_time = millis();
     }
     int current_millis = millis();
 
     // obtain a connected client that has available readable data.
     // client connection persists out of scope
-    if (WiFiClient client = wifi_server.available()) {
-        last_insn_time = current_millis;
-        // the below would get run somewhat regularly and cause occasional delays
-        // if (client != last_client) {
-        //     Serial.println("Wifi: Client replaced, disconnecting");
-        //     last_client.stop();
-        // }
-        last_client = client;
-        if (is_paused) {
-            resume_activities();
+    WiFiClient client = wifi_server.available();
+    if (client && client.available() > 0) {
+        int nbytes = client.available();
+        if (nbytes >= RECV_BUFSIZE) {
+            if (nbytes != RECV_BUFSIZE) {
+                Serial.println("Warning: too much data");
+            }
+            last_insn_time = current_millis;
+            keepalive_time = current_millis;
+            // the below would get run somewhat regularly and cause occasional delays
+            // if (client != last_client) {
+            //     Serial.println("Wifi: Client replaced, disconnecting");
+            //     last_client.stop();
+            // }
+            last_client = client;
+            if (is_paused) {
+                resume_activities();
+            }
+            handle_request(client);
+        } else {
+            Serial.print("OOPS NOT ENOUGH DATA: ");
+            Serial.println(nbytes);
         }
-        handle_request(client);
     } else { // no client with data
         int time_since_res = (current_millis - last_insn_time);
         if (rc_timeout < time_since_res && !is_paused) {
