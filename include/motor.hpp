@@ -7,6 +7,7 @@
 
 extern int max_looptime;
 
+const int motion_led_pin = 0;
 const int ultrasonic_trigger_pin = 1;
 const int ultrasonic_1_pin = 2;
 const int ultrasonic_2_pin = 3;
@@ -15,8 +16,6 @@ const int follower_1_pin = 4; // purple
 const int follower_2_pin = 5; // yellow
 const int follower_3_pin = 6; // orange
 const int follower_4_pin = 7; // brown
-// led pins
-const int motion_led_pin = 0;
 // block density detection subsystem, all have prefix p_
 const int p_is_dense_pin = 8; // green
 const int p_is_block_pin = 9; // yellow

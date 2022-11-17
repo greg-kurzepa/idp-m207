@@ -11,7 +11,7 @@ void update_time() {
   curr_millis = millis();
   if (curr_millis - prev_millis > max_looptime) {
     max_looptime = curr_millis - prev_millis;
-    Serial.println(max_looptime);
+    // Serial.println(max_looptime);
   }
 }
 
