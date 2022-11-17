@@ -56,6 +56,7 @@ void resume_activities() {
     is_paused = false;
     Serial.println("Wifi: Resuming activity due to reconnection");
     resume_motors();
+    max_looptime = 0;
 }
 
 void combine_prev_response() {
