@@ -7,22 +7,26 @@
 
 extern int max_looptime;
 
-const int motion_led_pin = 0;
-const int ultrasonic_trigger_pin = 1;
-const int ultrasonic_1_pin = 2;
-const int ultrasonic_2_pin = 3;
+const pin_size_t ultrasonic_trigger_pin = 1;
+const pin_size_t ultrasonic_1_pin = 2;
+const pin_size_t ultrasonic_2_pin = 3;
 // on board, from right to left: purple, orange, yellow, brown
-const int follower_1_pin = 4; // purple
-const int follower_2_pin = 5; // yellow
-const int follower_3_pin = 6; // orange
-const int follower_4_pin = 7; // brown
+const pin_size_t follower_1_pin = 4; // purple
+const pin_size_t follower_2_pin = 5; // yellow
+const pin_size_t follower_3_pin = 6; // orange
+const pin_size_t follower_4_pin = 7; // brown
 // block density detection subsystem, all have prefix p_
-const int p_is_dense_pin = 8; // green
-const int p_is_block_pin = 9; // yellow
-const int p_lo_density_led_pin = 10; // lights up green led
-const int p_hi_density_led_pin = 11; // lights up red led
+const pin_size_t block_is_dense_pin = 8; // green wire
+const pin_size_t block_present_pin = 9; // yellow wire
+const pin_size_t lo_density_led_pin = 10; // lights up green led
+const pin_size_t hi_density_led_pin = 11; // lights up red led
+const pin_size_t motion_led_pin = 12; // orange wire
 
 // Motors
+const uint8_t left_motor_num = 1;
+const uint8_t right_motor_num = 2;
+const uint8_t grabber_motor_num = 3;
+
 void setup_motors();
 void set_motor_speed(int n, int speed);
 void pause_motors();
@@ -60,12 +64,29 @@ namespace WifiSecrets {
     extern char pass[];
 }
 
-// LEDs
-void update_leds();
-void setup_leds();
-bool detect_cube();
+// Motion LED
+void update_motion_led();
+void setup_motion_led();
+
+// Block detection
+enum BlockDensity {
+    NilDensity  = -1,
+    LowDensity  = 0,
+    HighDensity = 1,
+};
+
+void setup_block_leds();
+void update_block_leds();
+void setup_grabber();
+void update_grabber();
+void open_grabber();
+void close_grabber();
+
+void signal_block_density(BlockDensity density);
+bool detect_block_presence();
+BlockDensity determine_block_density();
 
 // Time
 void update_time();
-extern int prev_millis;
-extern int curr_millis;
+extern long prev_millis;
+extern long curr_millis;

@@ -1,8 +1,8 @@
 #include "motor.hpp"
 #include <MemoryFree.h>
 
-extern int prev_millis {0};
-extern int curr_millis {0};
+extern long prev_millis {0};
+extern long curr_millis {0};
 
 extern int max_looptime {0};
 
@@ -26,15 +26,19 @@ void setup()
 
   setup_motors();
   setup_follower();
-  setup_leds();
+  setup_motion_led();
+  setup_block_leds();
+  setup_grabber();
   setup_wifi();
 
   setup_ultrasonic();
+  
 }
 
 void loop() {
   update_time();
-  update_leds();
+  update_grabber();
+  update_motion_led();
+  update_block_leds();
   tick_wifi();
-  //Serial.println(freeMemory(), DEC);
 }

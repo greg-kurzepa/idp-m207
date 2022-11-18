@@ -5,10 +5,12 @@
 Adafruit_MotorShield AFMS;
 Adafruit_DCMotor *motor1;
 Adafruit_DCMotor *motor2;
+Adafruit_DCMotor *motor3;
 
 // desired values
 int motor1_speed = 0;
 int motor2_speed = 0;
+int motor3_speed = 0;
 
 bool is_moving() {
     return (motor1_speed && motor2_speed && !is_paused);
@@ -16,8 +18,9 @@ bool is_moving() {
 
 void setup_motors() {
     AFMS = Adafruit_MotorShield();
-    motor1 = AFMS.getMotor(1);
-    motor2 = AFMS.getMotor(2);
+    motor1 = AFMS.getMotor(left_motor_num);
+    motor2 = AFMS.getMotor(right_motor_num);
+    motor3 = AFMS.getMotor(grabber_motor_num);
     AFMS.begin();
 }
 
@@ -47,6 +50,11 @@ void set_motor_speed(int n, int speed) {
         prev_speed = motor2_speed;
         motor2_speed = speed;
         motor = motor2;
+        break;
+    case 3:
+        prev_speed = motor3_speed;
+        motor3_speed = speed;
+        motor = motor3;
         break;
     default:
         break;

@@ -129,16 +129,34 @@ void handle_request(WiFiClient client) {
     if (instruction & 1<<4) {
         get_ultrasonic_data = true;
     }
+    // (bit 1 & 2 for motor reverse)
+    // bit 0 → set grabber position
+    if (instruction & 1<<0) {
+        close_grabber();
+    } else {
+        open_grabber();
+    }
 
-    // byte 3 (set LEDs)
-    led_set = recv_buffer[3];
-    // TODO set some LEDs here
+    // byte 3
+    int byte3 = recv_buffer[3];
+    // bit 7 → signal density?
+    if (byte3 & 1<<7) {
+        // bit 6 → high density?
+        if (byte3 & 1<<6) {
+            signal_block_density(HighDensity);
+        } else {
+            signal_block_density(LowDensity);
+        }
+    } else {
+        signal_block_density(NilDensity);
+    }
 
     // Byte 4: request id (cycles from 0 to 255)
     uint8_t id = recv_buffer[4];
     is_retrying = id == last_request_id;
     last_request_id = id;
     if (is_retrying) {
+        Serial.println("Wifi: Retrying failed response");
         combine_prev_response();
     }
 
@@ -151,6 +169,9 @@ void handle_request(WiFiClient client) {
     //
     // (CANNOT CURRENTLY SEND ANY IMU READINGS since we have not implemented imu stuff yet)
     
+    // First response bytes
+
+    send_buffer[0] = 0;
     if (get_follower_data) {
         get_follower_readings();
         uint8_t follower_data {0};
@@ -158,8 +179,13 @@ void handle_request(WiFiClient client) {
         follower_data |= follower_2 << 6;
         follower_data |= follower_3 << 5;
         follower_data |= follower_4 << 4;
-        send_buffer[0] = follower_data;
+        send_buffer[0] |= follower_data;
     }
+
+    send_buffer[0] |= detect_block_presence() << 3;
+    send_buffer[0] |= determine_block_density() << 2;
+
+    // Other response bytes
 
     if (get_ultrasonic_data) {
         pulse_ultrasonic(1);
