@@ -5,13 +5,8 @@ int grabber_motor_close_speed = 255;
 int grabber_closing_duration = 3000; // ms
 int grabber_opening_duration = 3000; // ms
 long grabber_start_time; // when motion started (ms)
-enum GrabberStatus {
-    GrabberClosing,
-    GrabberOpening,
-    GrabberClosed,
-    GrabberOpen,
-};
-GrabberStatus grabber_status = GrabberOpen;
+
+extern GrabberStatus grabber_status = GrabberOpen;
 
 void setup_grabber() {
 }
@@ -33,6 +28,10 @@ void close_grabber() {
 
 void open_grabber() {
     set_grabber_position(GrabberOpening, GrabberOpen, -grabber_motor_close_speed);
+}
+
+bool is_grabber_moving() {
+    return (grabber_status == GrabberClosing) || (grabber_status == GrabberOpening);
 }
 
 void update_grabber() {

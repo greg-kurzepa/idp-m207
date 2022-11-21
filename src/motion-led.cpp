@@ -1,25 +1,40 @@
 #include "motor.hpp"
 
 bool motion_led_on = false;
-int prev_toggle_millis = 0;
+int prev_cycle_time = -1; // ms
+// measures time since light being turned on, excluding paused time
+int phase = 0;
 const int pulse_motion_period = 455; // minimum time inbetween toggle of the motion_led in ms
 
 void setup_motion_led() {
     pinMode(motion_led_pin, OUTPUT);
     digitalWrite(motion_led_pin, 0);
+    prev_cycle_time = millis();
+}
+
+void set_motion_led_on(bool on) {
+    if (motion_led_on != on) {
+        motion_led_on = on;
+        digitalWrite(motion_led_pin, on);
+    }
 }
 
 void update_motion_led() {
     // This LED is on at 2Hz +- 10% if the robot is moving
-    if (is_moving()) { // if motors are spinning, toggle led if necessary
-        if (curr_millis - prev_toggle_millis >= pulse_motion_period) { // if led needs to be toggled (>=455ms has passed)
-            prev_toggle_millis = curr_millis;
-
-            motion_led_on = !motion_led_on;
-            digitalWrite(motion_led_pin, motion_led_on);
+    if (is_moving()) {
+        phase += (millis() - prev_cycle_time);
+        if (phase < pulse_motion_period) {
+            // For first half of cycle, turn LED on
+            set_motion_led_on(true);
+        } else if (phase < (2*pulse_motion_period)) {
+            // For second half of cycle, turn LED off
+            set_motion_led_on(false);
+        } else {
+            // Reset cycle
+            phase = 0;
         }
-    } else if (motion_led_on) { // if motors are not spinning and led is on, turn off led
-        motion_led_on = false;
-        digitalWrite(motion_led_pin, 0);
+    } else {
+        set_motion_led_on(false);
     }
+    prev_cycle_time = millis();
 }

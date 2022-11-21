@@ -39,12 +39,14 @@ extern bool is_paused;
 void setup_follower();
 void get_follower_readings();
 
-extern int follower_1;
-extern int follower_2;
-extern int follower_3;
-extern int follower_4;
-extern int line_changes[];
-extern int prev_line_changes[];
+enum LineReading {
+    BlackLine=0,
+    WhiteLine=1,
+};
+
+extern LineReading line_readings[4];
+extern int line_changes[4];
+extern int prev_line_changes[4];
 
 // Ultrasonic
 void setup_ultrasonic();
@@ -77,14 +79,25 @@ enum BlockDensity {
 
 void setup_block_leds();
 void update_block_leds();
+void signal_block_density(BlockDensity density);
+bool detect_block_presence();
+BlockDensity determine_block_density();
+
+// Grabber
+
+enum GrabberStatus {
+    GrabberClosing,
+    GrabberOpening,
+    GrabberClosed,
+    GrabberOpen,
+};
+extern GrabberStatus grabber_status;
+
 void setup_grabber();
 void update_grabber();
 void open_grabber();
 void close_grabber();
-
-void signal_block_density(BlockDensity density);
-bool detect_block_presence();
-BlockDensity determine_block_density();
+bool is_grabber_moving();
 
 // Time
 void update_time();

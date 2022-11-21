@@ -162,8 +162,6 @@ void handle_request(WiFiClient client) {
 
     // Note: bytes 5,6 are currently unassigned to a purpose in life (so sad)
 
-    propagate_reponse();
-
     //
     // Send response of sensor readings
     //
@@ -175,15 +173,16 @@ void handle_request(WiFiClient client) {
     if (get_follower_data) {
         get_follower_readings();
         uint8_t follower_data {0};
-        follower_data |= follower_1 << 7;
-        follower_data |= follower_2 << 6;
-        follower_data |= follower_3 << 5;
-        follower_data |= follower_4 << 4;
+        follower_data |= line_readings[0] << 7;
+        follower_data |= line_readings[1] << 6;
+        follower_data |= line_readings[2] << 5;
+        follower_data |= line_readings[3] << 4;
         send_buffer[0] |= follower_data;
     }
 
     send_buffer[0] |= detect_block_presence() << 3;
     send_buffer[0] |= determine_block_density() << 2;
+    send_buffer[0] |= is_grabber_moving() << 1;
 
     // Other response bytes
 
@@ -200,6 +199,8 @@ void handle_request(WiFiClient client) {
     send_buffer[6] = (line_changes[2] << 4) | line_changes[3];
 
     wifi_server.write(send_buffer, SEND_BUFSIZE);
+
+    propagate_reponse();
 }
 
 // call client.stop() after this many milliseconds
@@ -207,7 +208,7 @@ int client_timeout = 1000;
 WiFiClient last_client;
 
 int reset_timeout = 5000;
-int keepalive_time;
+long keepalive_time = millis();
 
 void(* resetArduino) (void) = 0;
 
