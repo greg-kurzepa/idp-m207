@@ -1,15 +1,19 @@
-#include "motor.hpp"
+#include "core.hpp"
+
+// The amber LED blinks at 2Hz +- 10% if the robot is moving
+
+// minimum time inbetween toggle of the motion_led in ms
+// aim for lower bound of period of desired 2Hz +- 10% frequency
+const int half_period = 455;
 
 bool motion_led_on = false;
-int prev_cycle_time = -1; // ms
 // measures time since light being turned on, excluding paused time
+// keeping track of phase so that the blink is smoother in spite of regular short pauses
 int phase = 0;
-const int pulse_motion_period = 455; // minimum time inbetween toggle of the motion_led in ms
 
 void setup_motion_led() {
     pinMode(motion_led_pin, OUTPUT);
     digitalWrite(motion_led_pin, 0);
-    prev_cycle_time = millis();
 }
 
 void set_motion_led_on(bool on) {
@@ -20,21 +24,20 @@ void set_motion_led_on(bool on) {
 }
 
 void update_motion_led() {
-    // This LED is on at 2Hz +- 10% if the robot is moving
     if (is_moving()) {
-        phase += (millis() - prev_cycle_time);
-        if (phase < pulse_motion_period) {
+        phase += (cur_cycle_time - prev_cycle_time);
+        // Obtain principal phase [0,T)
+        phase %= (2*half_period);
+
+        if (phase < half_period) {
             // For first half of cycle, turn LED on
             set_motion_led_on(true);
-        } else if (phase < (2*pulse_motion_period)) {
+        } else {
             // For second half of cycle, turn LED off
             set_motion_led_on(false);
-        } else {
-            // Reset cycle
-            phase = 0;
         }
     } else {
         set_motion_led_on(false);
     }
-    prev_cycle_time = millis();
+    prev_cycle_time = cur_cycle_time;
 }

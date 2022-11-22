@@ -1,4 +1,4 @@
-#include "motor.hpp"
+#include "core.hpp"
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 
 // AFMS needs to be stored here or bad things happen

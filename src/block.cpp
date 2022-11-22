@@ -1,15 +1,12 @@
 
-#include "motor.hpp"
+#include "core.hpp"
 
 int grabber_motor_close_speed = 255;
 int grabber_closing_duration = 3000; // ms
 int grabber_opening_duration = 3000; // ms
-long grabber_start_time; // when motion started (ms)
+long grabber_start_time = 0; // when motion started (ms)
 
 extern GrabberStatus grabber_status = GrabberOpen;
-
-void setup_grabber() {
-}
 
 void set_grabber_position(GrabberStatus transient_status, GrabberStatus final_status, int speed) {
     if (grabber_status == transient_status ||
@@ -68,9 +65,6 @@ void setup_block_leds() {
 }
 
 BlockDensity signalled_density = NilDensity;
-
-void update_block_leds() {
-}
 
 BlockDensity determine_block_density() {
     if (digitalRead(block_is_dense_pin)) {

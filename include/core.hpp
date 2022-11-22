@@ -5,16 +5,15 @@
 #include <SPI.h>
 #include <Wire.h>
 
-extern int max_looptime;
+// number of line followers, ultrasonic sensors
+#define N_FOLLOWERS 4
+#define N_ULTRASONICS 2
 
 const pin_size_t ultrasonic_trigger_pin = 1;
-const pin_size_t ultrasonic_1_pin = 2;
-const pin_size_t ultrasonic_2_pin = 3;
-// on board, from right to left: purple, orange, yellow, brown
-const pin_size_t follower_1_pin = 4; // purple
-const pin_size_t follower_2_pin = 5; // yellow
-const pin_size_t follower_3_pin = 6; // orange
-const pin_size_t follower_4_pin = 7; // brown
+const pin_size_t ultrasonic_pins[N_ULTRASONICS] = {2,3}; // echo pins
+// connectors on board, from right to left: purple, orange, yellow, brown
+// pin wire colours: purple, yellow, orange, brown
+const pin_size_t follower_pins[N_FOLLOWERS] = {4,5,6,7};
 // block density detection subsystem, all have prefix p_
 const pin_size_t block_is_dense_pin = 8; // green wire
 const pin_size_t block_present_pin = 9; // yellow wire
@@ -36,30 +35,35 @@ bool is_moving();
 extern bool is_paused;
 
 // Line followers
-void setup_follower();
-void get_follower_readings();
+void setup_followers();
+void take_follower_readings();
+void update_followers();
 
 enum LineReading {
     BlackLine=0,
     WhiteLine=1,
 };
 
-extern LineReading line_readings[4];
-extern int line_changes[4];
-extern int prev_line_changes[4];
+extern LineReading line_readings[N_FOLLOWERS];
+extern int line_changes[N_FOLLOWERS];
+extern int prev_line_changes[N_FOLLOWERS];
 
 // Ultrasonic
 void setup_ultrasonic();
-void pulse_ultrasonic(int n);
+void pulse_ultrasonic(size_t n);
 
 const int speed_of_sound = 340;
 
-extern uint16_t latest_ultrasonic1_dist;
-extern uint16_t latest_ultrasonic2_dist;
+extern uint16_t latest_ultrasonic_dists[N_ULTRASONICS];
 
 // WiFi
+#define SERVER_PORT 23
+#define RECV_BUFSIZE 6 // length of each message received from pc client
+#define SEND_BUFSIZE 7 // length of each message sent to pc client
+
 void setup_wifi();
-void tick_wifi();
+void update_wifi();
+void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[RECV_BUFSIZE]);
 
 namespace WifiSecrets {
     extern char ssid[];
@@ -78,7 +82,6 @@ enum BlockDensity {
 };
 
 void setup_block_leds();
-void update_block_leds();
 void signal_block_density(BlockDensity density);
 bool detect_block_presence();
 BlockDensity determine_block_density();
@@ -93,13 +96,11 @@ enum GrabberStatus {
 };
 extern GrabberStatus grabber_status;
 
-void setup_grabber();
 void update_grabber();
 void open_grabber();
 void close_grabber();
 bool is_grabber_moving();
 
 // Time
-void update_time();
-extern long prev_millis;
-extern long curr_millis;
+extern long prev_cycle_time;
+extern long cur_cycle_time;

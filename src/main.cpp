@@ -1,19 +1,10 @@
-#include "motor.hpp"
+#include "core.hpp"
 #include <MemoryFree.h>
 
-extern long prev_millis {0};
-extern long curr_millis {0};
-
-extern int max_looptime {0};
-
-void update_time() {
-  prev_millis = curr_millis;
-  curr_millis = millis();
-  if (curr_millis - prev_millis > max_looptime) {
-    max_looptime = curr_millis - prev_millis;
-    // Serial.println(max_looptime);
-  }
-}
+// Timestamp of the moment before the main loop cycle
+extern long cur_cycle_time = 0;
+// Same as cur_cycle_time, but for the previous cycle
+extern long prev_cycle_time = 0;
 
 void setup()
 {
@@ -22,23 +13,21 @@ void setup()
     ; // wait for serial port to connect; necessary for native USB port
   }
 
-  pinMode(LED_BUILTIN, OUTPUT);
-
+  cur_cycle_time = millis();
   setup_motors();
-  setup_follower();
+  setup_followers();
+  setup_ultrasonic();
   setup_motion_led();
   setup_block_leds();
-  setup_grabber();
   setup_wifi();
-
-  setup_ultrasonic();
-  
+  prev_cycle_time = cur_cycle_time;
 }
 
 void loop() {
-  update_time();
+  cur_cycle_time = millis();
   update_grabber();
   update_motion_led();
-  update_block_leds();
-  tick_wifi();
+  update_followers();
+  update_wifi();
+  prev_cycle_time = cur_cycle_time;
 }
