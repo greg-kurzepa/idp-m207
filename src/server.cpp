@@ -131,8 +131,8 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     send_buffer[0] = res_byte1;
 
     if (get_ultrasonic_data) {
+        pulse_ultrasonic(0);
         pulse_ultrasonic(1);
-        pulse_ultrasonic(2);
     }
     send_buffer[1] = latest_ultrasonic_dists[0] >> 8;
     send_buffer[2] = latest_ultrasonic_dists[0];

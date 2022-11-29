@@ -13,7 +13,7 @@ void setup_ultrasonic() {
 const int echo_timeout = 8000; // μs
 
 // Takes a distance measurement from one of the ultrasonic sensors
-void pulse_ultrasonic(size_t n) {
+void pulse_ultrasonic(size_t idx) {
     // Trigger the pulses
     digitalWrite(ultrasonic_trigger_pin, LOW);
     delayMicroseconds(5);
@@ -21,8 +21,8 @@ void pulse_ultrasonic(size_t n) {
     delayMicroseconds(10);
     digitalWrite(ultrasonic_trigger_pin, LOW);
 
-    long trip_micros = pulseIn(ultrasonic_pins[n], HIGH, echo_timeout);
+    long trip_micros = pulseIn(ultrasonic_pins[idx], HIGH, echo_timeout);
     int dist_mm = ((speed_of_sound * trip_micros)/ 1000) / 2;
     
-    latest_ultrasonic_dists[n] = dist_mm;
+    latest_ultrasonic_dists[idx] = dist_mm;
 }
