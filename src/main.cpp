@@ -28,6 +28,7 @@ void loop() {
   update_grabber();
   update_motion_led();
   update_followers();
+  
   update_wifi();
   prev_cycle_time = cur_cycle_time;
 }

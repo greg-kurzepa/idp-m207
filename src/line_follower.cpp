@@ -17,12 +17,14 @@ void setup_followers() {
 void take_follower_readings() {
     for (size_t i = 0; i < N_FOLLOWERS; i++) {
         LineReading prev_reading = line_readings[i];
+        LineReading current_reading;
         if (digitalRead(follower_pins[i])) {
-            line_readings[i] = BlackLine;
+            current_reading = BlackLine;
         } else {
-            line_readings[i] = WhiteLine;
+            current_reading = WhiteLine;
         }
-        if (line_readings[i] != prev_reading) {
+        line_readings[i] = current_reading;
+        if (current_reading != prev_reading) {
             line_changes[i]++;
         }
     }

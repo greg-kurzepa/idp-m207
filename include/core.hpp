@@ -14,8 +14,8 @@ const pin_size_t lo_density_led_pin = 1; // green LED
 const pin_size_t hi_density_led_pin = 2; // red LED
 const pin_size_t block_present_pin = 3; // yellow wire
 const pin_size_t block_is_dense_pin = 4; // green wire
-const pin_size_t ultrasonic_trigger_pin = 5; // pink
-const pin_size_t ultrasonic_pins[N_ULTRASONICS] = {6,7}; // echo pins
+const pin_size_t ultrasonic_trigger_pin = 6; // pink
+const pin_size_t ultrasonic_pins[N_ULTRASONICS] = {7,5}; // echo pins
 // connectors on board, from right to left: purple, orange, yellow, brown
 // pin wire colours: purple, yellow, orange, brown
 const pin_size_t follower_pins[N_FOLLOWERS] = {10,11,12,13};

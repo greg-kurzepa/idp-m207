@@ -28,7 +28,8 @@ bool is_retrying = false;
 // Limits the line change data to 4 bits for sending over the network
 uint8_t get_line_change(size_t n) {
     int nchanges = line_changes[n];
-    int limit = 15; // (2^4)-1
+    int width = 4;
+    int limit = (1<<width)-1;
     if (nchanges > limit) {
         nchanges = limit;
     }
