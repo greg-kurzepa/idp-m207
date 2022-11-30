@@ -14,21 +14,24 @@ void setup()
   }
 
   cur_cycle_time = millis();
+
   setup_motors();
   setup_followers();
   setup_ultrasonic();
   setup_motion_led();
   setup_block_leds();
   setup_wifi();
+
   prev_cycle_time = cur_cycle_time;
 }
 
 void loop() {
   cur_cycle_time = millis();
+
   update_grabber();
   update_motion_led();
   update_followers();
-  
   update_wifi();
+
   prev_cycle_time = cur_cycle_time;
 }

@@ -1,11 +1,10 @@
-
 #include <WiFiNINA.h>
 #include "core.hpp"
 
 int wifi_status = WL_IDLE_STATUS;
 WiFiServer wifi_server(SERVER_PORT);
 
-// Connect to mobile hotspot, blocking until successful
+/// @brief Connect to mobile hotspot, blocking until successful.
 void wifi_connect_wait() {
     while (wifi_status != WL_CONNECTED) {
         Serial.print("Wifi: Connecting to SSID: ");
@@ -23,6 +22,7 @@ void wifi_connect_wait() {
     wifi_server.begin();
 }
 
+/// @brief Blocks until wifi module on arduino is working
 void setup_wifi() {
     if (WiFi.status() == WL_NO_MODULE) {
         Serial.println("FATAL ERROR: Could not communicate with Wi-Fi module");
@@ -35,10 +35,11 @@ const int client_timeout = 1000;
 WiFiClient last_client;
 
 // Restart Arduino if `reset_timeout` milliseconds elapsed since `keepalive_time`
-// Used as a 'just-in-case' defensive measure if connection problems arise.
+// Used as a 'just-in-case' defensive measure if connection problems arise (if it's failing to reconnect).
 const int reset_timeout = 5000;
 long keepalive_time = millis();
 
+/// @brief Restarts arduino
 void(* resetArduino) (void) = 0;
 
 // remote control timeout (ms):
@@ -48,18 +49,21 @@ const int rc_timeout = 100;
 int last_req_time = -1;
 extern bool is_paused = false;
 
+/// @brief Pauses wheel motors.
 void pause_activities() {
     is_paused = true;
     // Serial.println("Wifi: Pausing due to no network activity");
     pause_motors();
 }
 
+/// @brief Resumes wheel motors to their speed before pause_activities() was called.
 void resume_activities() {
     is_paused = false;
     // Serial.println("Wifi: Resuming activity due to reconnection");
     resume_motors();
 }
 
+/// @brief Manages WiFi communication between computer remote (client) and arduino (server).
 void update_wifi() {
     wifi_status = WiFi.status();
 
@@ -79,7 +83,9 @@ void update_wifi() {
     if (client) {
         last_client = client;
     }
+    // if non-zero bytes of available data
     if (client && (client.available() > 0)) {
+        // number of bytes of available data
         int nbytes = client.available();
         if (nbytes >= RECV_BUFSIZE) {
             if (nbytes != RECV_BUFSIZE) {
@@ -91,12 +97,15 @@ void update_wifi() {
                 resume_activities();
             }
 
+            // buffer that received bytes are stored in
             uint8_t recv_buffer[RECV_BUFSIZE];
+            // buffer that bytes to send will be stored in
             uint8_t send_buffer[SEND_BUFSIZE];
 
             // read all bytes from client (assume fixed length message)
             client.read(&recv_buffer[0], RECV_BUFSIZE);
             handle_request(recv_buffer, send_buffer);
+            // send all bytes from server (assume fixed lenght message)
             wifi_server.write(send_buffer, SEND_BUFSIZE);
         } else {
             Serial.print("Wifi: OOPS NOT ENOUGH DATA: ");
@@ -104,15 +113,21 @@ void update_wifi() {
         }
     } else { // there is no client with data
         int time_since_last_req = (current_time - last_req_time);
+
+        // pauses robot movement if robot is not already paused and last received data was at least rc_timeout ago
         if ((rc_timeout < time_since_last_req) && !is_paused) {
             pause_activities();
         }
+
+        // disconnects if last received data was at least client_timeout ago
         if (client_timeout < time_since_last_req) {
             if (last_client.connected()) {
                 Serial.println("Wifi: Disconnecting client");
                 last_client.stop();
             }
         }
+
+        // restarts if last reveived data was at least reset_timeout ago
         if (reset_timeout < time_since_last_req) {
             Serial.println("Wifi: Resetting");
             resetArduino();

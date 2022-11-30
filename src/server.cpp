@@ -1,5 +1,3 @@
-
-
 #include "core.hpp"
 
 // Move cumulative data from previous snapshot to current snapshot
@@ -36,9 +34,13 @@ uint8_t get_line_change(size_t n) {
     return nchanges;
 }
 
+/// @brief Decode message in recv_buffer, put response in send_buffer
+/// @param recv_buffer 
+/// @param send_buffer 
 void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_BUFSIZE]) {
     //
     // Decode message and performs instructions
+    // For data layout protocol data see documentation
     // =======================================================
     bool get_follower_data = false;
     bool get_ultrasonic_data = false;
@@ -73,7 +75,7 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     if (instruction & 1<<4) {
         get_ultrasonic_data = true;
     }
-    // (bit 1 & 2 for motor reverse)
+    // (bit 1 & 2 for motor reverse, already used above)
     // bit 0 → set grabber position
     if (instruction & 1<<0) {
         close_grabber();
@@ -81,9 +83,10 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
         open_grabber();
     }
 
-    // [Bytes 1 & 2 for motor speed]
+    // Bytes 1 & 2 for motor speed, already used above
+    //
 
-    // Byte 3
+    // Byte 3 (block density)
     //
     int byte3 = recv_buffer[3];
     // bit 7 → signal density?
@@ -121,10 +124,12 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     //     take_follower_readings();
     // }
     uint8_t res_byte1 = 0;
+    // 4 bits for line sensor data
     res_byte1 |= line_readings[0] << 4;
     res_byte1 |= line_readings[1] << 5;
     res_byte1 |= line_readings[2] << 6;
     res_byte1 |= line_readings[3] << 7;
+    // 3 bits for block data
     res_byte1 |= detect_block_presence() << 3;
     res_byte1 |= determine_block_density() << 2;
     res_byte1 |= is_grabber_moving() << 1;
@@ -134,6 +139,7 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
         pulse_ultrasonic(0);
         pulse_ultrasonic(1);
     }
+    // fits the two 16-bit readings for each ultrasonic sensor into 4 bytes
     send_buffer[1] = latest_ultrasonic_dists[0] >> 8;
     send_buffer[2] = latest_ultrasonic_dists[0];
     send_buffer[3] = latest_ultrasonic_dists[1] >> 8;

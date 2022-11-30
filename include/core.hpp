@@ -5,10 +5,11 @@
 #include <SPI.h>
 #include <Wire.h>
 
-// number of line followers, ultrasonic sensors
+// Number of line followers & ultrasonic sensors
 #define N_FOLLOWERS 4
 #define N_ULTRASONICS 2
 
+// Pin allocations
 const pin_size_t motion_led_pin = 0; // orange wire, amber LED
 const pin_size_t lo_density_led_pin = 1; // green LED
 const pin_size_t hi_density_led_pin = 2; // red LED
@@ -19,7 +20,6 @@ const pin_size_t ultrasonic_pins[N_ULTRASONICS] = {7,5}; // echo pins
 // connectors on board, from right to left: purple, orange, yellow, brown
 // pin wire colours: purple, yellow, orange, brown
 const pin_size_t follower_pins[N_FOLLOWERS] = {13,12,11,10};
-
 
 // Motors
 const uint8_t left_motor_num = 1;
@@ -59,21 +59,22 @@ extern uint16_t latest_ultrasonic_dists[N_ULTRASONICS];
 
 // WiFi
 #define SERVER_PORT 23
-#define RECV_BUFSIZE 6 // length of each message received from pc client
-#define SEND_BUFSIZE 7 // length of each message sent to pc client
+#define RECV_BUFSIZE 6 // length in bytes of each message received from pc client
+#define SEND_BUFSIZE 7 // length in bytes of each message sent to pc client
 
 void setup_wifi();
 void update_wifi();
 void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[RECV_BUFSIZE]);
 
+// ssid & password of mobile hotspot (not included on github; initialise these yourself)
 namespace WifiSecrets {
     extern char ssid[];
     extern char pass[];
 }
 
 // Motion LED
-void update_motion_led();
 void setup_motion_led();
+void update_motion_led();
 
 // Block detection
 enum BlockDensity {
@@ -88,7 +89,7 @@ bool detect_block_presence();
 BlockDensity determine_block_density();
 
 // Grabber
-
+// code for the grabber is in block .cpp, but note that its initial setup is handled by motor.cpp in setup_motors()
 enum GrabberStatus {
     GrabberClosing,
     GrabberOpening,
