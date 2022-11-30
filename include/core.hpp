@@ -18,7 +18,7 @@ const pin_size_t ultrasonic_trigger_pin = 6; // pink
 const pin_size_t ultrasonic_pins[N_ULTRASONICS] = {7,5}; // echo pins
 // connectors on board, from right to left: purple, orange, yellow, brown
 // pin wire colours: purple, yellow, orange, brown
-const pin_size_t follower_pins[N_FOLLOWERS] = {10,11,12,13};
+const pin_size_t follower_pins[N_FOLLOWERS] = {13,12,11,10};
 
 
 // Motors
@@ -44,6 +44,7 @@ enum LineReading {
     WhiteLine=1,
 };
 
+// ordered from left to right, from robot perspective
 extern LineReading line_readings[N_FOLLOWERS];
 extern int line_changes[N_FOLLOWERS];
 extern int prev_line_changes[N_FOLLOWERS];

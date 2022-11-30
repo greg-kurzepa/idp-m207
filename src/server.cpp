@@ -121,10 +121,10 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     //     take_follower_readings();
     // }
     uint8_t res_byte1 = 0;
-    res_byte1 |= line_readings[0] << 7;
-    res_byte1 |= line_readings[1] << 6;
-    res_byte1 |= line_readings[2] << 5;
-    res_byte1 |= line_readings[3] << 4;
+    res_byte1 |= line_readings[0] << 4;
+    res_byte1 |= line_readings[1] << 5;
+    res_byte1 |= line_readings[2] << 6;
+    res_byte1 |= line_readings[3] << 7;
     res_byte1 |= detect_block_presence() << 3;
     res_byte1 |= determine_block_density() << 2;
     res_byte1 |= is_grabber_moving() << 1;
