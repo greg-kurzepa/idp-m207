@@ -1,2 +1,4 @@
 .pio
 .vscode
+lib/WiFiNINA/
+wifi_secrets.cpp
