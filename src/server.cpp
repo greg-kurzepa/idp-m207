@@ -1,6 +1,6 @@
 #include "core.hpp"
 
-// Move cumulative data from previous snapshot to current snapshot
+/// @brief Move cumulative unsent data from previous loops (previous snapshot) to current loop (current snapshot)
 void combine_prev_response() {
     for (size_t i = 0; i < N_FOLLOWERS; i++) {
         line_changes[i] += prev_line_changes[i];
@@ -8,8 +8,7 @@ void combine_prev_response() {
     }
 }
 
-// Store snapshot of cumulative data sent in latest reponse, and start
-// accumulating afresh for the next response
+/// @brief Store snapshot of cumulative data sent in latest reponse, and reset line_changes to start accumulating afresh for the next response
 void propagate_reponse() {
     for (size_t i = 0; i < N_FOLLOWERS; i++) {
         prev_line_changes[i] = line_changes[i];
@@ -23,7 +22,8 @@ uint8_t last_request_id = 255;
 // Used to combine cumulative data of latest response with the previous failed response
 bool is_retrying = false;
 
-// Limits the line change data to 4 bits for sending over the network
+/// @brief Limits the maximum value of each value in line_changes to that of a 4 bit integer, for sending over the network
+/// @param n index of value in line_changes array to operate on
 uint8_t get_line_change(size_t n) {
     int nchanges = line_changes[n];
     int width = 4;
@@ -107,8 +107,10 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     is_retrying = (id == last_request_id);
     last_request_id = id;
 
+    // if we know that the server (arduino) still hasn't managed to send data since the last response from the client...
     if (is_retrying) {
         Serial.println("Wifi: Retrying failed response");
+        // ...combine previous line sensor changes with new ones to get the total line sensor changes since last response from client
         combine_prev_response();
     }
 
@@ -135,6 +137,7 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     res_byte1 |= is_grabber_moving() << 1;
     send_buffer[0] = res_byte1;
 
+    // take readings from ultrasonic sensors if client requested them
     if (get_ultrasonic_data) {
         pulse_ultrasonic(0);
         pulse_ultrasonic(1);
@@ -145,8 +148,10 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     send_buffer[3] = latest_ultrasonic_dists[1] >> 8;
     send_buffer[4] = latest_ultrasonic_dists[1];
 
+    // fits the 4 values in line_changes into 2 bytes
     send_buffer[5] = (get_line_change(0) << 4) | get_line_change(1);
     send_buffer[6] = (get_line_change(2) << 4) | get_line_change(3);
 
+    // resets line_changes array back to zero for next loop
     propagate_reponse();
 }

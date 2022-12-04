@@ -3,7 +3,7 @@
 // The amber LED blinks at 2Hz +- 10% if the robot is moving
 
 // minimum time inbetween toggle of the motion_led in ms
-// aim for lower bound of period of desired 2Hz +- 10% frequency
+// aim for lower bound of period of desired 2Hz +- 10% frequency to avoid hitting upper bound during long loop times
 const int half_period = 455;
 
 bool motion_led_on = false;
@@ -16,6 +16,8 @@ void setup_motion_led() {
     digitalWrite(motion_led_pin, 0);
 }
 
+/// @brief Turn led on or off.
+/// @param on true to turn on, false to turn off
 void set_motion_led_on(bool on) {
     if (motion_led_on != on) {
         motion_led_on = on;
@@ -23,6 +25,7 @@ void set_motion_led_on(bool on) {
     }
 }
 
+/// @brief Should be run every timestep. Updates the motion LED to its correct state, depending on current phase and whether the robot is moving
 void update_motion_led() {
     if (is_moving()) {
         phase += (cur_cycle_time - prev_cycle_time);
