@@ -42,7 +42,6 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
     // Decode message and performs instructions
     // For data layout protocol data see documentation
     // =======================================================
-    bool get_follower_data = false;
     bool get_ultrasonic_data = false;
 
     // Byte 0 (instruction byte)
@@ -67,10 +66,7 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
         }
         set_motor_speed(2, speed);
     }
-    // bit 5 → request line follower data?
-    if (instruction & 1<<5) {
-        get_follower_data = true;
-    }
+    // bit 5 unused
     // bit 4 → request ultrasonic data?
     if (instruction & 1<<4) {
         get_ultrasonic_data = true;
@@ -114,17 +110,13 @@ void handle_request(uint8_t recv_buffer[RECV_BUFSIZE], uint8_t send_buffer[SEND_
         combine_prev_response();
     }
 
-    // Note: Bytes 5,6 are currently unused
+    // Note: Byte 5 is unused
 
     //
     // Send response of sensor readings
     // ===============================================================
     
     send_buffer[0] = 0;
-    // Redundant as follower readings taken every local cycle:
-    // if (get_follower_data) {
-    //     take_follower_readings();
-    // }
     uint8_t res_byte1 = 0;
     // 4 bits for line sensor data
     res_byte1 |= line_readings[0] << 4;
