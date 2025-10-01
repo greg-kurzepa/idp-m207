@@ -1,4 +1,8 @@
-How to build PlatformIO based project
+# IDP M207
+
+Code to control a robot for a coursework competition, including a wireless connection to send data to and receive instructions from a 'master'. The team won joint 1st prize.
+
+# How to build PlatformIO based project
 =====================================
 
 1. [Install PlatformIO Core](https://docs.platformio.org/page/core.html)
